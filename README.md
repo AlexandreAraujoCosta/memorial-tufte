@@ -12,6 +12,11 @@ O resultado está em [`memorial-alexandre/memorial.pdf`](memorial-alexandre/memo
 com 143 páginas, ao lado do arquivo `.md` que o gerou. É o mesmo texto, nas duas
 pontas do processo.
 
+Esse PDF é o documento apresentado à banca, com as imagens na resolução
+original. As imagens guardadas aqui foram reduzidas a 1600 pixels no lado maior,
+para que o repositório não pese 60 MB: recompilando o memorial a partir delas
+você obtém o mesmo texto e as mesmas 143 páginas, num arquivo de 12 MB.
+
 ## 1. Instale o que é preciso
 
 São três programas, e nenhum deles é pago.
