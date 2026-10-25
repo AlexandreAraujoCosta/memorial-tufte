@@ -1,0 +1,494 @@
+<title>Memorial em Markdown</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,600;1,400&family=Source+Sans+3:wght@400;600&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+  /* Coluna única de leitura, com a margem do próprio livro aparecendo nas
+     ilustrações: verde e azul da capa, papel levemente quente. */
+  :root {
+    --papel: #faf8f4;
+    --superficie: #ffffff;
+    --tinta: #1a1c20;
+    --tinta-fraca: #5c6069;
+    --azul: #013f7a;
+    --verde: #008137;
+    --linha: #e3ded4;
+    --codigo-bg: #f3efe7;
+    --aviso: #8c1d18;
+    --display: "EB Garamond", Georgia, serif;
+    --corpo: "Source Sans 3", system-ui, sans-serif;
+    --mono: "JetBrains Mono", ui-monospace, monospace;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --papel: #16181c;
+      --superficie: #1d2025;
+      --tinta: #e8e6e1;
+      --tinta-fraca: #a2a7b0;
+      --azul: #7fb0e6;
+      --verde: #4fbd79;
+      --linha: #2e323a;
+      --codigo-bg: #22262c;
+      --aviso: #e4847e;
+      color-scheme: dark;
+    }
+  }
+  :root[data-theme="dark"] {
+    --papel: #16181c;
+    --superficie: #1d2025;
+    --tinta: #e8e6e1;
+    --tinta-fraca: #a2a7b0;
+    --azul: #7fb0e6;
+    --verde: #4fbd79;
+    --linha: #2e323a;
+    --codigo-bg: #22262c;
+    --aviso: #e4847e;
+    color-scheme: dark;
+  }
+
+  body {
+    background: var(--papel);
+    color: var(--tinta);
+    font-family: var(--corpo);
+    font-size: 17px;
+    line-height: 1.6;
+    margin: 0;
+  }
+  .envelope {
+    max-width: 50rem;
+    margin: 0 auto;
+    padding-left: max(16px, env(safe-area-inset-left, 0px));
+    padding-right: max(16px, env(safe-area-inset-right, 0px));
+    padding-block: 3rem 5rem;
+  }
+  h1, h2, h3 { font-family: var(--display); font-weight: 600; text-wrap: balance; line-height: 1.2; }
+  h1 { font-size: clamp(2.1rem, 6vw, 3rem); margin: 0 0 .4rem; letter-spacing: -0.01em; }
+  h2 { font-size: 1.6rem; margin: 0; }
+  h3 { font-size: 1.15rem; margin: 2rem 0 .4rem; font-family: var(--corpo); font-weight: 600; }
+  p { margin: 0 0 1rem; max-width: 65ch; }
+  a { color: var(--azul); text-underline-offset: 3px; }
+  .chapeu {
+    font-size: .78rem; letter-spacing: .14em; text-transform: uppercase;
+    color: var(--verde); font-weight: 600; margin-bottom: .8rem;
+  }
+  .abertura { font-size: 1.1rem; color: var(--tinta-fraca); max-width: 60ch; }
+
+  .passo { display: grid; grid-template-columns: 2.6rem 1fr; gap: 0 1rem; margin-top: 3.2rem; }
+  .passo > .numero {
+    font-family: var(--display); font-size: 1.7rem; color: var(--verde);
+    line-height: 1.2; font-variant-numeric: tabular-nums;
+  }
+  .passo > .conteudo { min-width: 0; }
+  @media (max-width: 460px) {
+    .passo { grid-template-columns: 1fr; gap: .2rem; }
+  }
+
+  pre, code { font-family: var(--mono); font-size: .86em; }
+  pre {
+    background: var(--codigo-bg); border: 1px solid var(--linha); border-radius: 6px;
+    padding: .85rem 1rem; overflow-x: auto; margin: 0; line-height: 1.5;
+  }
+  p code { background: var(--codigo-bg); padding: .1em .35em; border-radius: 3px; }
+  .bloco { position: relative; margin: .9rem 0 1.2rem; }
+  .copiar {
+    position: absolute; top: .45rem; right: .45rem;
+    font: 600 .7rem/1 var(--corpo); letter-spacing: .06em; text-transform: uppercase;
+    color: var(--tinta-fraca); background: var(--superficie);
+    border: 1px solid var(--linha); border-radius: 4px; padding: .35rem .5rem; cursor: pointer;
+  }
+  .copiar:hover { color: var(--azul); border-color: var(--azul); }
+  .copiar:focus-visible { outline: 2px solid var(--azul); outline-offset: 2px; }
+
+  .caixa {
+    background: var(--superficie); border: 1px solid var(--linha);
+    border-radius: 8px; padding: 1.1rem 1.2rem; margin: 1.2rem 0;
+  }
+  .campos { display: grid; grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr)); gap: .7rem 1rem; }
+  label { display: block; font-size: .78rem; letter-spacing: .06em; text-transform: uppercase;
+          color: var(--tinta-fraca); font-weight: 600; margin-bottom: .25rem; }
+  input[type="text"] {
+    width: 100%; box-sizing: border-box; font: inherit; font-size: .92rem;
+    padding: .45rem .6rem; border: 1px solid var(--linha); border-radius: 5px;
+    background: var(--papel); color: var(--tinta);
+  }
+  input[type="text"]:focus-visible { outline: 2px solid var(--azul); outline-offset: 1px; }
+  .escolhas { display: flex; flex-wrap: wrap; gap: .4rem 1.2rem; margin: .2rem 0 .9rem; }
+  .escolhas label { text-transform: none; letter-spacing: 0; font-size: .95rem;
+                    color: var(--tinta); font-weight: 400; display: flex; gap: .4rem; align-items: center; }
+
+  table { border-collapse: collapse; width: 100%; font-size: .92rem; }
+  .rolavel { overflow-x: auto; margin: 1rem 0 1.4rem; }
+  th, td { text-align: left; padding: .5rem .7rem; border-bottom: 1px solid var(--linha); vertical-align: top; }
+  th { font-size: .76rem; letter-spacing: .08em; text-transform: uppercase; color: var(--tinta-fraca); }
+  td code { white-space: nowrap; }
+
+  .lista-check { list-style: none; padding: 0; margin: .4rem 0 0; }
+  .lista-check li { display: flex; gap: .6rem; align-items: flex-start; padding: .4rem 0;
+                    border-bottom: 1px solid var(--linha); }
+  .lista-check input { margin-top: .35rem; accent-color: var(--verde); }
+  .lista-check span { max-width: 58ch; }
+
+  .erro { border-left: 3px solid var(--aviso); padding-left: .9rem; margin: 1.3rem 0; }
+  .erro p:first-child { font-weight: 600; margin-bottom: .3rem; }
+  .erro code { color: var(--aviso); }
+
+  figure { margin: 1.6rem 0; }
+  figcaption { font-size: .85rem; color: var(--tinta-fraca); margin-top: .5rem; max-width: 55ch; }
+  hr { border: 0; border-top: 1px solid var(--linha); margin: 3.5rem 0 0; }
+  footer { margin-top: 2rem; font-size: .9rem; color: var(--tinta-fraca); }
+</style>
+
+<div class="envelope">
+  <p class="chapeu">Do seu texto ao PDF</p>
+  <h1>Memorial em Markdown</h1>
+  <p class="abertura">
+    Você tem um texto, num arquivo <code>.md</code> ou <code>.docx</code>, e quer
+    um memorial com capa, sumário, notas na margem e figuras na margem. Esta
+    página leva do arquivo que você tem ao PDF, em seis passos, e diz o que fazer
+    quando algum deles falhar.
+  </p>
+
+  <figure>
+    <svg viewBox="0 0 560 260" role="img" aria-label="Anatomia da página: coluna de texto à esquerda e coluna de margem à direita, onde ficam notas e figuras." style="width:100%;height:auto">
+      <rect x="1" y="1" width="558" height="258" rx="5" fill="var(--superficie)" stroke="var(--linha)"/>
+      <rect x="40" y="30" width="250" height="10" rx="2" fill="var(--tinta)" opacity="0.72"/>
+      <rect x="40" y="50" width="280" height="7" rx="2" fill="var(--tinta)" opacity="0.26"/>
+      <rect x="40" y="64" width="280" height="7" rx="2" fill="var(--tinta)" opacity="0.26"/>
+      <rect x="40" y="78" width="245" height="7" rx="2" fill="var(--tinta)" opacity="0.26"/>
+      <rect x="40" y="100" width="280" height="7" rx="2" fill="var(--tinta)" opacity="0.26"/>
+      <rect x="40" y="114" width="200" height="7" rx="2" fill="var(--tinta)" opacity="0.26"/>
+      <rect x="40" y="140" width="280" height="7" rx="2" fill="var(--tinta)" opacity="0.26"/>
+      <rect x="40" y="154" width="280" height="7" rx="2" fill="var(--tinta)" opacity="0.26"/>
+      <rect x="40" y="168" width="150" height="7" rx="2" fill="var(--tinta)" opacity="0.26"/>
+      <line x1="345" y1="22" x2="345" y2="238" stroke="var(--linha)" stroke-dasharray="4 4"/>
+      <rect x="360" y="96" width="150" height="5" rx="2" fill="var(--azul)" opacity="0.55"/>
+      <rect x="360" y="106" width="150" height="5" rx="2" fill="var(--azul)" opacity="0.55"/>
+      <rect x="360" y="116" width="96" height="5" rx="2" fill="var(--azul)" opacity="0.55"/>
+      <text x="360" y="86" font-family="var(--corpo)" font-size="11" fill="var(--azul)">nota na margem</text>
+      <rect x="360" y="150" width="150" height="58" rx="3" fill="var(--verde)" opacity="0.22" stroke="var(--verde)"/>
+      <rect x="360" y="214" width="120" height="5" rx="2" fill="var(--verde)" opacity="0.6"/>
+      <text x="40" y="238" font-family="var(--corpo)" font-size="11" fill="var(--tinta-fraca)">coluna de texto</text>
+      <text x="360" y="238" font-family="var(--corpo)" font-size="11" fill="var(--tinta-fraca)">coluna de margem</text>
+    </svg>
+    <figcaption>
+      O formato tem duas colunas. O texto corre na esquerda, mais estreita que a
+      página inteira; a direita recebe as notas e as figuras pequenas, na altura
+      do parágrafo que as chamou.
+    </figcaption>
+  </figure>
+
+  <div class="passo">
+    <div class="numero">1</div>
+    <div class="conteudo">
+      <h2>Instale os três programas</h2>
+      <p>
+        Nenhum é pago. O <a href="https://pandoc.org/installing.html">pandoc</a>
+        converte o texto; uma distribuição TeX compõe o PDF
+        (<a href="https://miktex.org">MiKTeX</a> no Windows,
+        <code>texlive-xetex</code> no Linux,
+        <a href="https://tug.org/mactex">MacTeX</a> no macOS); e o Python, com a
+        biblioteca Pillow, gera a capa.
+      </p>
+      <p>
+        Depois, baixe o repositório e instale a dependência do Python:
+      </p>
+      <div class="bloco">
+        <pre id="cmd-clone">git clone https://github.com/AlexandreAraujoCosta/memorial-tufte
+cd memorial-tufte
+pip install -r requirements.txt</pre>
+        <button class="copiar" data-alvo="cmd-clone">copiar</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="passo">
+    <div class="numero">2</div>
+    <div class="conteudo">
+      <h2>Gere o exemplo antes de escrever</h2>
+      <p>
+        É assim que você descobre se a instalação está completa, com um arquivo
+        de sete páginas em vez de um memorial inteiro.
+      </p>
+      <div class="bloco">
+        <pre id="cmd-exemplo">python build.py exemplo/memorial-exemplo.md --capa</pre>
+        <button class="copiar" data-alvo="cmd-exemplo">copiar</button>
+      </div>
+      <p>
+        Saindo o PDF, siga adiante. Se faltar um pacote do TeX, a mensagem diz
+        qual, e o MiKTeX costuma oferecer a instalação na hora. Na primeira
+        execução ele baixa bastante coisa, e demora.
+      </p>
+    </div>
+  </div>
+
+  <div class="passo">
+    <div class="numero">3</div>
+    <div class="conteudo">
+      <h2>Traga o seu texto</h2>
+      <p>
+        Ponha o seu arquivo na pasta do repositório. Se for <code>.docx</code>, o
+        programa o converte sozinho e extrai as imagens para uma pasta
+        <code>imagens/</code> ao lado dele.
+      </p>
+      <p>
+        Da conversão do Word passam intactos títulos, notas de rodapé, imagens,
+        negrito, itálico, citações e tabelas. Medimos isso num memorial de 47 mil
+        palavras. O que o Word não tem é a nota na margem, e por isso existe uma
+        convenção: escreva, no corpo do texto, onde a nota deve aparecer:
+      </p>
+      <div class="bloco">
+        <pre id="cmd-margem">[margem: O texto que deve ir para a margem.]</pre>
+        <button class="copiar" data-alvo="cmd-margem">copiar</button>
+      </div>
+      <p>O programa converte isso em nota lateral ao ler o arquivo.</p>
+    </div>
+  </div>
+
+  <div class="passo">
+    <div class="numero">4</div>
+    <div class="conteudo">
+      <h2>Escreva o cabeçalho</h2>
+      <p>
+        São seis campos, no alto do arquivo, entre linhas de três traços. Eles
+        alimentam a capa e a folha de rosto. Preencha abaixo e copie o resultado
+        para a primeira linha do seu texto.
+      </p>
+      <div class="caixa">
+        <div class="campos">
+          <div><label for="f-title">Título</label><input type="text" id="f-title" value="Memorial Acadêmico"></div>
+          <div><label for="f-subtitle">Subtítulo</label><input type="text" id="f-subtitle" value="Promoção à classe de Professor Titular"></div>
+          <div><label for="f-author">Autor</label><input type="text" id="f-author" value="Seu Nome Completo"></div>
+          <div><label for="f-titulacao">Titulação atual</label><input type="text" id="f-titulacao" value="Professor Associado da Faculdade de X"></div>
+          <div><label for="f-institution">Instituição</label><input type="text" id="f-institution" value="Universidade Y · Faculdade de X"></div>
+          <div><label for="f-date">Data</label><input type="text" id="f-date" value="Março · 2027"></div>
+        </div>
+      </div>
+      <div class="bloco">
+        <pre id="saida-yaml">---
+---</pre>
+        <button class="copiar" data-alvo="saida-yaml">copiar</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="passo">
+    <div class="numero">5</div>
+    <div class="conteudo">
+      <h2>Marque as notas, as figuras e as quebras</h2>
+      <p>
+        O corpo é Markdown comum. Cinco marcações são próprias deste formato, e a
+        terceira é onde quase todo mundo tropeça.
+      </p>
+      <div class="rolavel">
+        <table>
+          <thead>
+            <tr><th>O que você quer</th><th>Como se escreve</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Nota na margem</td>
+              <td><code>texto[^nome]</code> e, em qualquer lugar do arquivo, <code>[^nome]: a nota</code></td>
+            </tr>
+            <tr>
+              <td>Figura na margem</td>
+              <td><code>![Legenda.](imagens/foto.jpg){.margin}</code>, com uma linha em branco antes</td>
+            </tr>
+            <tr>
+              <td>Figura na largura do texto</td>
+              <td>a mesma linha, sem o <code>{.margin}</code></td>
+            </tr>
+            <tr>
+              <td>Quebra de página</td>
+              <td>uma linha isolada com <code>---</code></td>
+            </tr>
+            <tr>
+              <td>Tabela</td>
+              <td>barras verticais; a largura de cada coluna vem do número de traços da linha de separação</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <p>
+        Faltando a linha em branco antes da imagem, ou o <code>{.margin}</code>
+        depois dela, a figura vai parar no meio do texto, em tamanho natural, e a
+        legenda desaparece sem aviso.
+      </p>
+    </div>
+  </div>
+
+  <div class="passo">
+    <div class="numero">6</div>
+    <div class="conteudo">
+      <h2>Gere o PDF</h2>
+      <p>Monte o comando conforme o seu caso:</p>
+      <div class="caixa">
+        <div class="campos" style="margin-bottom:.8rem">
+          <div><label for="f-arquivo">Nome do seu arquivo</label><input type="text" id="f-arquivo" value="meu-memorial.md"></div>
+          <div><label for="f-marca">Marca da instituição (opcional)</label><input type="text" id="f-marca" placeholder="imagens/marca.png"></div>
+        </div>
+        <div class="escolhas">
+          <label><input type="checkbox" id="f-capa" checked> gerar a capa</label>
+          <label><input type="checkbox" id="f-saida"> escolher o nome do PDF</label>
+        </div>
+      </div>
+      <div class="bloco">
+        <pre id="saida-cmd">python build.py meu-memorial.md --capa</pre>
+        <button class="copiar" data-alvo="saida-cmd">copiar</button>
+      </div>
+      <p>
+        O memorial que serve de exemplo no repositório tem 143 páginas e leva
+        pouco mais de um minuto para compor. Rode o comando a cada versão do
+        texto: nada se perde, porque o PDF é sempre refeito do zero.
+      </p>
+    </div>
+  </div>
+
+  <hr>
+
+  <h2 style="margin-top:3rem">Quando der errado</h2>
+  <p>Quatro falhas respondem pela maioria das tentativas frustradas.</p>
+
+  <div class="erro">
+    <p><code>Unable to load picture or PDF file</code></p>
+    <p>
+      O caminho da imagem é relativo ao arquivo de texto, e quem a abre é o
+      LaTeX. Rode o <code>build.py</code> em vez de chamar o pandoc direto: ele
+      entra na pasta do arquivo antes de compor. Confira também se o nome tem o
+      mesmo uso de maiúsculas do arquivo em disco, o que importa no Linux.
+    </p>
+  </div>
+
+  <div class="erro">
+    <p><code>File `tufte-book.cls' not found</code></p>
+    <p>
+      Falta o pacote <code>tufte-latex</code> na sua distribuição TeX. No MiKTeX,
+      aceite a instalação que ele oferece. No TeX Live,
+      <code>sudo apt install texlive-latex-extra texlive-fonts-extra</code>.
+      O mesmo vale para a fonte <code>etbb</code>, que vem no mesmo conjunto.
+    </p>
+  </div>
+
+  <div class="erro">
+    <p>A legenda da figura sumiu, e a imagem ficou enorme</p>
+    <p>
+      Faltou a linha em branco antes da imagem, ou o <code>{.margin}</code>
+      depois. Sem a linha em branco, a imagem gruda no parágrafo anterior e o
+      pandoc a trata como figura embutida, que não tem legenda.
+    </p>
+  </div>
+
+  <div class="erro">
+    <p>As letras do subtítulo da capa se sobrepõem</p>
+    <p>
+      O subtítulo fecha na largura exata do título, esticando o espacejamento.
+      Com um subtítulo muito longo, o espacejamento ficaria negativo. A versão
+      atual do gerador encolhe o corpo da letra até caber; se você tiver uma
+      cópia antiga, atualize o repositório.
+    </p>
+  </div>
+
+  <h2 style="margin-top:3rem">Antes de entregar</h2>
+  <p>
+    A lei manda que o memorial considere ensino, pesquisa, extensão, gestão
+    acadêmica e produção profissional relevante. A lista abaixo é de ordem
+    prática, e fica marcada no seu navegador.
+  </p>
+  <ul class="lista-check" id="checklist">
+    <li><label><input type="checkbox" data-item="numeros"> <span>Levantei os números antes de escrever: turmas ministradas, orientações concluídas, trabalhos publicados, citações.</span></label></li>
+    <li><label><input type="checkbox" data-item="rubricas"> <span>O texto cobre as cinco rubricas da lei, e não só pesquisa.</span></label></li>
+    <li><label><input type="checkbox" data-item="anexos"> <span>Os anexos trazem as listas completas, que é onde a banca confere o que o texto resume.</span></label></li>
+    <li><label><input type="checkbox" data-item="imagens"> <span>Todas as imagens estão numa pasta ao lado do texto, com caminho relativo.</span></label></li>
+    <li><label><input type="checkbox" data-item="sumario"> <span>Gerei o PDF inteiro uma última vez e conferi o sumário e a numeração.</span></label></li>
+    <li><label><input type="checkbox" data-item="leitura"> <span>Alguém que não acompanhou a escrita leu o documento inteiro.</span></label></li>
+  </ul>
+
+  <footer>
+    <p>
+      Os modelos, o programa e um memorial completo de exemplo estão em
+      <a href="https://github.com/AlexandreAraujoCosta/memorial-tufte">github.com/AlexandreAraujoCosta/memorial-tufte</a>.
+      O desenho tipográfico vem dos livros de Edward Tufte, pela classe
+      <code>tufte-latex</code>.
+    </p>
+  </footer>
+</div>
+
+<script>
+  (function () {
+    function texto(el) { return el.innerText.replace(/\s+$/, ""); }
+
+    document.querySelectorAll(".copiar").forEach(function (b) {
+      b.addEventListener("click", function () {
+        var alvo = document.getElementById(b.dataset.alvo);
+        var original = b.textContent;
+        function avisa(msg) {
+          b.textContent = msg;
+          setTimeout(function () { b.textContent = original; }, 1600);
+        }
+        try {
+          navigator.clipboard.writeText(texto(alvo)).then(
+            function () { avisa("copiado"); },
+            function () { seleciona(alvo); avisa("selecionado"); }
+          );
+        } catch (e) {
+          seleciona(alvo);
+          avisa("selecionado");
+        }
+      });
+    });
+
+    function seleciona(el) {
+      try {
+        var r = document.createRange();
+        r.selectNodeContents(el);
+        var s = window.getSelection();
+        s.removeAllRanges();
+        s.addRange(r);
+      } catch (e) { /* sem seleção, o texto continua visível para copiar à mão */ }
+    }
+
+    var campos = ["title", "subtitle", "author", "titulacao", "institution", "date"];
+    function montaYaml() {
+      var linhas = ["---"];
+      campos.forEach(function (c) {
+        var v = (document.getElementById("f-" + c).value || "").replace(/"/g, "'");
+        linhas.push(c + ': "' + v + '"');
+      });
+      linhas.push("---");
+      document.getElementById("saida-yaml").textContent = linhas.join("\n");
+    }
+    campos.forEach(function (c) {
+      document.getElementById("f-" + c).addEventListener("input", montaYaml);
+    });
+    montaYaml();
+
+    function montaComando() {
+      var arq = (document.getElementById("f-arquivo").value || "meu-memorial.md").trim();
+      var cmd = "python build.py " + arq;
+      if (document.getElementById("f-capa").checked) cmd += " --capa";
+      var marca = (document.getElementById("f-marca").value || "").trim();
+      if (marca) cmd += ' --marca "' + marca + '"';
+      if (document.getElementById("f-saida").checked) {
+        cmd += ' --saida "' + arq.replace(/\.(md|docx)$/i, "") + '.pdf"';
+      }
+      var aviso = /\.docx$/i.test(arq)
+        ? "\n# o .docx vira .md ao lado dele, com as imagens em imagens/"
+        : "";
+      document.getElementById("saida-cmd").textContent = cmd + aviso;
+    }
+    ["f-arquivo", "f-marca", "f-capa", "f-saida"].forEach(function (id) {
+      var el = document.getElementById(id);
+      el.addEventListener(el.type === "checkbox" ? "change" : "input", montaComando);
+    });
+    montaComando();
+
+    var CHAVE = "memorial-tufte-checklist";
+    var marcas = {};
+    try { marcas = JSON.parse(localStorage.getItem(CHAVE) || "{}") || {}; } catch (e) { marcas = {}; }
+    document.querySelectorAll("#checklist input").forEach(function (c) {
+      if (marcas[c.dataset.item]) c.checked = true;
+      c.addEventListener("change", function () {
+        marcas[c.dataset.item] = c.checked;
+        try { localStorage.setItem(CHAVE, JSON.stringify(marcas)); } catch (e) { /* sem persistência */ }
+      });
+    });
+  })();
+</script>
