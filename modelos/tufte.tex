@@ -1,0 +1,173 @@
+% Tufte-book template para Pandoc
+% Uso: pandoc memorial.md --template=templates/tufte.tex -o output/memorial.pdf
+\documentclass[a4paper, justified, portuguese, nofonts, oneside]{tufte-book}
+
+% Codificação e língua
+\usepackage{fontspec}
+\usepackage[brazil]{babel}
+
+% Fontes — ET Book (versão digital da Bembo usada por Tufte)
+\setmainfont{ETbb}[
+  Extension      = .otf,
+  UprightFont    = *-Regular,
+  BoldFont       = *-Bold,
+  ItalicFont     = *-Italic,
+  BoldItalicFont = *-BoldItalic,
+]
+% Forçar corpo a 12pt (tufte-book ignora a opção 12pt de classe)
+\renewcommand{\normalsize}{\fontsize{13}{15.6}\selectfont}
+\normalsize
+% Citação recuada: 1pt abaixo do corpo (a classe usaria \small, que ficou em 9pt)
+\renewenvironment{quote}
+  {\list{}{\rightmargin\leftmargin}\fontsize{12}{14.4}\selectfont\item\relax}
+  {\endlist}
+\setlength{\emergencystretch}{3em}
+
+\usepackage{microtype}
+
+% Nota lateral que não cabe na margem vai para a página seguinte, em vez de
+% passar da borda do papel (a classe não divide nota entre páginas).
+\usepackage{marginfix}
+
+% Espaço mínimo entre notas consecutivas na sidebar (padrão tufte-book: 10pt)
+\addtolength{\marginparpush}{1pt}
+
+% Sidebar 10% mais larga, aproximando-a da margem direita
+\addtolength{\marginparwidth}{0.1\marginparwidth}
+
+% Imagens
+\usepackage{graphicx}
+\usepackage{eso-pic} % capa em página inteira, ignorando as margens do tufte-book
+
+% Tabelas
+\usepackage{calc}
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{array}
+
+% Quadro de largura total (texto + margem)
+\usepackage{framed}
+\newenvironment{quadro}{%
+  \begin{fullwidth}%
+  \begin{framed}%
+}{%
+  \end{framed}%
+  \end{fullwidth}%
+}
+
+% Largura de página inteira para as tabelas dos anexos: mantém a margem
+% esquerda do corpo do texto e reduz a margem direita (a coluna do sidebar)
+% até que ela fique idêntica à esquerda, centrando o bloco na página. Usa
+% adjustwidth (compatível com longtable, ao contrário de minipage) e força
+% columnwidth = linewidth para que as tabelas do pandoc, que se dimensionam
+% por \columnwidth, preencham toda a largura disponível.
+% Margem direita alvo = margem esquerda = 1in + \oddsidemargin; o deslocamento
+% aplicado é (alvo - margem direita atual).
+\usepackage{changepage}
+\newenvironment{fullpage}{%
+  \begin{adjustwidth}{0pt}{\dimexpr 2in + 2\oddsidemargin + \textwidth - \paperwidth\relax}%
+  \setlength{\columnwidth}{\linewidth}%
+}{%
+  \end{adjustwidth}%
+}
+
+% Formatação dos títulos
+% Capítulo: itálico, 2× a fonte do corpo (22pt), espaço após = 4× a fonte (88pt), sem espaço antes
+\titleformat{\chapter}[hang]
+  {\normalfont}{}{}{\fontsize{22}{26}\selectfont\itshape}
+\titlespacing*{\chapter}{0pt}{0pt}{88pt}
+
+% Seção: negrito, 15pt, espaço antes dobrado
+\titleformat{\section}
+  {\normalfont\fontsize{15}{18}\selectfont\bfseries}{\thesection}{0.8em}{}
+\titlespacing*{\section}{0pt}{6.5ex plus 1ex minus .2ex}{1.5ex plus .2ex}
+
+\titleformat{\subsection}
+  {\normalfont\normalsize\bfseries}{\thesubsection}{0.8em}{}
+
+% Cabeçalho: título da seção corrente + número de página no canto superior direito
+\renewcommand{\chaptermark}[1]{\markboth{#1}{}}
+% Estilo com nome próprio: o 'fancy' perdia o cabeçalho depois do \pagestyle{empty}
+% do sumário, porque a classe redefine 'empty' com o fancyhdr.
+\fancypagestyle{memorial}{%
+  \fancyhf{}%
+  \fancyhead[R]{\small\itshape\leftmark\quad\normalfont\small\thepage}%
+  \renewcommand{\headrulewidth}{0pt}%
+}
+% Página de capítulo: apenas número de página, sem título
+\fancypagestyle{plain}{
+  \fancyhf{}
+  \fancyhead[R]{\small\thepage}
+  \renewcommand{\headrulewidth}{0pt}
+}
+
+% tufte-book não suporta \subsubsection — redefinimos como parágrafo em negrito itálico
+\makeatletter
+\renewcommand{\subsubsection}[1]{\vspace{0.6em}\noindent\textbf{#1}\par\vspace{0.3em}}
+\makeatother
+
+% Links em itálico, sem sublinhado, na fonte do texto
+\hypersetup{hidelinks}
+\urlstyle{same}
+\let\oldhref\href
+\renewcommand{\href}[2]{\oldhref{#1}{\textit{#2}}}
+
+% Necessário para listas geradas pelo pandoc
+\providecommand{\tightlist}{\setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+
+% Espaçamento entre parágrafos
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0.5\baselineskip}
+
+\begin{document}
+
+% Evita página em branco entre a capa e o sumário (tufte-book força página ímpar mesmo em oneside)
+\let\cleardoublepage\clearpage
+
+% Capa, folha de rosto e sumário ficam fora da contagem; a numeração começa na
+% Apresentação (ver \pagenumbering{arabic}, antes do corpo).
+\pagenumbering{gobble}
+
+% Capa (imagem gerada por templates/gerar_capa.py, cobrindo a página inteira)
+$if(capa)$
+\AddToShipoutPictureBG*{\AtPageLowerLeft{\includegraphics[width=\paperwidth,height=\paperheight]{$capa$}}}
+$endif$
+\thispagestyle{empty}
+\null
+\newpage
+
+% Folha de rosto. Só duas fontes na página: o título e todo o resto.
+% Vai em fullwidth (texto + coluna das sidenotes): a coluna de texto do
+% tufte-book é estreita demais, e a 17pt quebraria tudo em muitas linhas.
+\newcommand{\rostotexto}{\fontsize{17}{21}\selectfont}
+\begin{titlepage}
+\begin{fullwidth}
+\vspace*{6cm}
+{\centering
+  {\fontsize{34}{40}\selectfont\itshape $title$\par}%
+  \vspace{0.8cm}
+  {\rostotexto $subtitle$\par}%
+  \vspace{3.5cm}
+  {\rostotexto\bfseries $author$\par}%
+  {\rostotexto $titulacao$\par}%
+\par}
+\vfill
+{\centering
+  {\rostotexto $institution$\par}%
+  {\rostotexto $date$\par}%
+\par}
+\end{fullwidth}
+\end{titlepage}
+
+\setcounter{tocdepth}{1}
+\pagestyle{empty}   % sumário sem cabeçalho nem número
+\tableofcontents
+\newpage
+
+% A partir daqui, a Apresentação: volta o cabeçalho e a numeração recomeça em 1
+\pagestyle{memorial}
+\pagenumbering{arabic}
+
+$body$
+
+\end{document}

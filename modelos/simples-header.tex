@@ -1,0 +1,26 @@
+% Cabecalho LaTeX para os documentos avulsos do processo (peças do SEI).
+% Nada aqui depende do template Tufte usado pelo memorial.
+\usepackage{etoolbox}
+\usepackage{longtable}
+\usepackage{booktabs}
+\usepackage{array}
+
+% tabela larga em corpo menor, alinhada a margem esquerda
+\AtBeginEnvironment{longtable}{\small}
+\setlength{\LTleft}{0pt}
+\setlength{\LTright}{0pt}
+\renewcommand{\arraystretch}{1.25}
+
+% linhas do cabecalho de identificacao com respiro
+\setlength{\parskip}{0.4em}
+\setlength{\parindent}{0pt}
+
+% Enderecos e DOIs dentro de tabela precisam quebrar, senao saem da pagina.
+% O texto visivel de cada link passa por \seqsplit, que permite quebra entre
+% caracteres; o destino do link nao muda.
+\usepackage{seqsplit}
+\usepackage{xurl}
+\AtBeginDocument{%
+  \let\linkoriginal\href
+  \renewcommand{\href}[2]{\linkoriginal{#1}{\seqsplit{#2}}}%
+}

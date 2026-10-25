@@ -1,0 +1,8 @@
+# gerados a cada compilação
+capa.png
+*.aux
+*.log
+*.out
+*.toc
+teste-*.pdf
+__pycache__/
